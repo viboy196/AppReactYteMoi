@@ -32,6 +32,9 @@ const Login = ({navigation}) => {
   const URL = 'http://27.71.228.66:8099/api/Auth/login?v=1.0';
 
   const [loginRequest, setLoginRequest] = useState<LoginRequest>();
+
+  const [textInfoErro, setTextInfoErro] = useState('');
+
   console.log('loginRequest', loginRequest);
   const onPressLogin = async () => {
     // Simple POST request with a JSON body using fetch
@@ -46,12 +49,14 @@ const Login = ({navigation}) => {
     const response = await fetch(URL, requestOptions);
     const data = await response.json();
     console.log('data', data);
-    if (data.status) {
+    if (data.status === true) {
       setLoginRequest({
         ...loginRequest,
         token: data.result,
       });
       navigation.navigate('Main');
+    } else {
+      setTextInfoErro('tài khoản hoặc mật khẩu không đúng');
     }
     console.log(loginRequest);
   };
@@ -140,6 +145,9 @@ const Login = ({navigation}) => {
                   />
                 ))}
             </View>
+          </View>
+          <View>
+            <Text>{textInfoErro}</Text>
           </View>
         </View>
         {/* layout button */}
