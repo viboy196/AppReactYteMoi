@@ -1,40 +1,62 @@
+import {useNavigation} from '@react-navigation/core';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React from 'react';
 import {
   Text,
   View,
   StyleSheet,
   Image,
-  ScrollView,
   SafeAreaView,
   StatusBar,
 } from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {setCustomText} from 'react-native-global-props';
+import {StackPrams} from '../navigation/App';
 
 const customTextProps = {
   style: {
     fontFamily: 'Roboto',
   },
 };
-
-const Main = ({navigation}) => {
+const Main = () => {
   setCustomText(customTextProps);
+
+  const navigation = useNavigation<NativeStackNavigationProp<StackPrams>>();
+  const params = navigation
+    .getState()
+    .routes.find(tr => tr.name === 'Main')?.params;
+
+  console.log('nhan dc', navigation);
+
+  // const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.Screens}>
-      <ScrollView style={styles.scrollView}>
-        {/* layout logo */}
-        <View style={styles.View1}>
-          <View style={styles.ViewTitleLogo}>
-            <Text style={styles.TitleLogo}>Y Tế Mới</Text>
-            <Text style={styles.TitleConten}>Màn hình chính</Text>
-          </View>
-          <View style={styles.ViewImagesLogo}>
-            <Image
-              source={require('../assets/ytemoitron.png')}
-              style={styles.logoImage}
-            />
-          </View>
+      {/* layout logo */}
+      <View style={styles.View1}>
+        <View style={styles.ViewTitleLogo}>
+          <Text style={styles.TitleLogo}>Y Tế Mới</Text>
+          <Text style={styles.TitleConten}>Màn hình chính</Text>
         </View>
-      </ScrollView>
+        <View style={styles.ViewImagesLogo}>
+          <Image
+            source={require('../assets/ytemoitron.png')}
+            style={styles.logoImage}
+          />
+        </View>
+      </View>
+      <View>
+        <Text>id nguoi dung {params?.info.id}</Text>
+
+        <Text>token : {params?.info.token}</Text>
+      </View>
+      <View style={styles.View2}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Text>Đăng xuât</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -45,12 +67,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingTop: StatusBar.currentHeight,
   },
-  scrollView: {},
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'yellow',
+  },
   View1: {
     flex: 400,
     flexDirection: 'row',
     alignItems: 'center',
   },
+
+  View2: {
+    flex: 600,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'yellow',
+  },
+
   ViewTitleLogo: {
     flex: 3,
     justifyContent: 'center',

@@ -6,8 +6,18 @@ import {
 } from '@react-navigation/stack';
 
 import {Login, Register, Welcome, Main} from '../screens';
+import {LoginRequest} from '../screens/Login';
 
-const Stack = createStackNavigator();
+export type StackPrams = {
+  Login: undefined;
+  Register: undefined;
+  Welcome: undefined;
+  Main: {
+    info: LoginRequest;
+  };
+};
+
+const Stack = createStackNavigator<StackPrams>();
 
 const App = () => {
   return (

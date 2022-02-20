@@ -19,13 +19,14 @@ export const validateEmail = (email?: string): boolean => {
 };
 
 export const validatePass = (pass?: string): Boolean => {
+  console.log('validatePass', 'pass', pass);
   if (pass === undefined) {
     return false;
   }
   if (pass === '') {
     return false;
   }
-  return pass.length > 3;
+  return pass.length > 0;
 };
 export const validatePassRedo = (passRedo?: string, pass?: string): Boolean => {
   if (pass === undefined) {
@@ -60,11 +61,32 @@ interface RegisterRequest {
   password?: string;
   passwordRedo?: string;
   email?: string;
-  fullname?: string;
+  fullName?: string;
 }
 export const validateRegister = (data: RegisterRequest): Number => {
+  console.log('validateRegister:', 'data :', data);
+
+  console.log(
+    'validateRegister:',
+    'check fullName :',
+    validatePass(data.fullName),
+  );
+
+  console.log(
+    'validateRegister:',
+    'validateEmail :',
+    validateEmail(data.email),
+  );
+  console.log(
+    'validateRegister:',
+    'validatePhoneVietNam :',
+    validatePhoneVietNam(data.phone),
+  );
+
+  console.log('validateRegister:', 'data :', data);
+
   if (
-    validatePass(data.fullname) &&
+    validatePass(data.fullName) &&
     validateEmail(data.email) &&
     validatePhoneVietNam(data.phone) &&
     validatePass(data.password) &&
@@ -72,7 +94,7 @@ export const validateRegister = (data: RegisterRequest): Number => {
   )
     return 2;
   if (
-    validatePass(data.fullname) &&
+    validatePass(data.fullName) &&
     validateEmail(data.email) &&
     validatePhoneVietNam(data.phone)
   )

@@ -1,3 +1,5 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {
   Text,
@@ -9,6 +11,7 @@ import {
   ScrollView,
   SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
 import {setCustomText} from 'react-native-global-props';
 
@@ -18,43 +21,43 @@ const customTextProps = {
   },
 };
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import {StackPrams} from '../navigation/App';
+import {URL} from '../Ultils/url';
 
 import {validatePhoneVietNam, validatePass} from '../Ultils/validations';
 
-interface LoginRequest {
+export interface LoginRequest {
   phone?: string;
   password?: string;
   token?: string;
+  id?: string;
 }
 
-const Login = ({navigation}) => {
+const Login = () => {
   setCustomText(customTextProps);
-  const URL = 'http://27.71.228.66:8099/api/Auth/login?v=1.0';
+  const navigation = useNavigation<NativeStackNavigationProp<StackPrams>>();
 
-  const [loginRequest, setLoginRequest] = useState<LoginRequest>();
+  const [loginRequest, setLoginRequest] = useState<LoginRequest>({
+    phone: '0981481527',
+    password: '1',
+  });
 
   const [textInfoErro, setTextInfoErro] = useState('');
 
   console.log('loginRequest', loginRequest);
   const onPressLogin = async () => {
     // Simple POST request with a JSON body using fetch
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        phone: loginRequest?.phone,
-        password: loginRequest?.password,
-      }),
-    };
-    const response = await fetch(URL, requestOptions);
+    const url = `${URL}api/Auth/Login?phone=${loginRequest.phone}&pass=${loginRequest.password}`;
+    console.log(url);
+
+    const response = await fetch(url);
     const data = await response.json();
     console.log('data', data);
     if (data.status === true) {
-      setLoginRequest({
-        ...loginRequest,
-        token: data.result,
-      });
-      navigation.navigate('Main');
+      console.log(data);
+      const logincp = loginRequest;
+      setLoginRequest({...logincp, id: data.id, token: data.token});
+      navigation.navigate('Main', {info: loginRequest});
     } else {
       setTextInfoErro('tài khoản hoặc mật khẩu không đúng');
     }
@@ -179,7 +182,9 @@ const Login = ({navigation}) => {
             <TouchableOpacity
               style={styles.createAccount}
               activeOpacity={0.7}
-              onPress={() => {}}>
+              onPress={() => {
+                Alert.alert('tính năng đang pháp triển');
+              }}>
               <Icon
                 name="facebook"
                 size={48}
@@ -189,7 +194,9 @@ const Login = ({navigation}) => {
             <TouchableOpacity
               style={styles.createAccount}
               activeOpacity={0.7}
-              onPress={() => {}}>
+              onPress={() => {
+                Alert.alert('tính năng đang pháp triển');
+              }}>
               <Icon
                 name="google"
                 size={48}

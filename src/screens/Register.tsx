@@ -1,3 +1,5 @@
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import React, {useState} from 'react';
 import {
   Text,
@@ -18,6 +20,8 @@ const customTextProps = {
   },
 };
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import {StackPrams} from '../navigation/App';
+import {URL} from '../Ultils/url';
 
 import {
   validatePhoneVietNam,
@@ -31,7 +35,7 @@ interface RegisterRequest {
   phone?: string;
   password?: string;
   email?: string;
-  fullname?: string;
+  fullName?: string;
 }
 
 interface TypeButtonRegister {
@@ -41,18 +45,24 @@ interface TypeButtonRegister {
 
 const Register = () => {
   setCustomText(customTextProps);
-  const URL = 'http://27.71.228.66:8099/api/User/register?v=1.0';
 
-  const [registerRequest, setLoginRequest] = useState<RegisterRequest>();
+  const navigation = useNavigation<NativeStackNavigationProp<StackPrams>>();
 
-  const [passRedo, setPassRedo] = useState<string>();
+  const [registerRequest, setLoginRequest] = useState<RegisterRequest>({
+    email: 'viboy196@gmail.com',
+    fullName: 'Nguyễn Văn Đàn',
+    phone: '0962635719',
+    password: 'Dannv0212@@',
+  });
+
+  const [passRedo, setPassRedo] = useState<string>('Dannv0212@@');
 
   const [stateButton, setStateButton] = useState<TypeButtonRegister>({
     status: 0,
     text: 'Tiếp tục',
   });
 
-  const [activateNumb, setActivateNum] = useState('');
+  const [textLabelErro, setTextLabelErro] = useState('');
 
   console.log('RegisterRequest', registerRequest);
   const onPressRegister = async () => {
@@ -64,29 +74,26 @@ const Register = () => {
     if (stateButton.status === 2) {
       console.log('vào kích hoạt');
       // Simple POST request with a JSON body using fetch
-      const requestOptions: RequestInit = {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          phone: registerRequest?.phone,
-          activeCode: activateNumb,
-        }),
-      };
-      const response = await fetch(
-        'http://27.71.228.66:8099/api/User/active?v=1.0',
-        requestOptions,
-      );
-      const data = await response.json();
-      console.log('data', data);
-      if (data.status) {
-        setStateButton({
-          status: 2,
-          text: 'Kích hoạt',
-        });
-      }
+      // const requestOptions: RequestInit = {
+      //   method: 'POST',
+      //   headers: {'Content-Type': 'application/json'},
+      //   body: JSON.stringify({
+      //     phone: registerRequest?.phone,
+      //     activeCode: activateNumb,
+      //   }),
+      // };
+      // const response = await fetch(
+      //   'http://27.71.228.66:8099/api/User/active?v=1.0',
+      //   requestOptions,
+      // );
+      // const data = await response.json();
+      // console.log('data', data);
+
+      navigation.navigate('Login');
     }
     if (stateButton.status === 1) {
       if (checkValidate === 2) {
+        const url = `${URL}api/Auth/Register`;
         console.log('vào gửi đăng ký');
         // Simple POST request with a JSON body using fetch
         const requestOptions: RequestInit = {
@@ -94,14 +101,16 @@ const Register = () => {
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(registerRequest),
         };
-        const response = await fetch(URL, requestOptions);
+        const response = await fetch(url, requestOptions);
         const data = await response.json();
         console.log('data', data);
         if (data.status) {
           setStateButton({
             status: 2,
-            text: 'Kích hoạt',
+            text: 'Quay lại đăng nhập',
           });
+        } else {
+          setTextLabelErro(data.error);
         }
       }
       return;
@@ -142,21 +151,21 @@ const Register = () => {
                   <TextInput
                     style={styles.textInput}
                     placeholder={'Họ và tên'}
-                    value={registerRequest?.fullname}
+                    value={registerRequest?.fullName}
                     onChangeText={text => {
                       const copyLogin: RegisterRequest = {
                         ...registerRequest,
-                        fullname: text,
+                        fullName: text,
                       };
                       console.log(copyLogin);
                       setLoginRequest(copyLogin);
                     }}
                   />
                   {!(
-                    registerRequest?.fullname === undefined ||
-                    registerRequest?.fullname === ''
+                    registerRequest?.fullName === undefined ||
+                    registerRequest?.fullName === ''
                   ) &&
-                    (validatePass(registerRequest?.fullname) ? (
+                    (validatePass(registerRequest?.fullName) ? (
                       <Icon
                         style={styles.viewInputIconDone}
                         name="check"
@@ -311,16 +320,17 @@ const Register = () => {
                     ))}
                 </View>
               </View>
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{color: 'red'}}>{textLabelErro}</Text>
+              </View>
             </View>
           )}
 
           {stateButton.status === 2 && (
             <View>
               <View style={styles.ViewInput}>
-                <Text style={styles.labelInput}>
-                  Nhập mã kích hoạt được gửi về :
-                </Text>
-                <View style={styles.ViewInputType}>
+                <Text style={styles.labelInput}>Đăng ký thành công</Text>
+                {/* <View style={styles.ViewInputType}>
                   <TextInput
                     style={styles.textInput}
                     placeholder={'Mã Kích Hoạt'}
@@ -345,7 +355,7 @@ const Register = () => {
                         size={24}
                       />
                     ))}
-                </View>
+                </View> */}
               </View>
             </View>
           )}
